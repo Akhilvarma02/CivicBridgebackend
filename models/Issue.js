@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const issueSchema = new mongoose.Schema({
   issueId: { type: String, required: true, unique: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'Citizen', required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   areaType: { type: String, required: true },
   town: { type: String, required: true },
   issueType: { type: String, required: true },

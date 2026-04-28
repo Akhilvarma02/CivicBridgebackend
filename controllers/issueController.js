@@ -62,6 +62,17 @@ exports.updateIssueStatus = async (req, res) => {
       res.status(404).json({ message: 'Issue not found' });
     }
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    console.error("[Issue ERROR]", error);
+    res.status(500).json({ message: 'Server/Database Error connecting to Issue updating.' });
+  }
+};
+
+exports.getMyIssues = async (req, res) => {
+  try {
+    const issues = await Issue.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    res.json(issues);
+  } catch (error) {
+    console.error("[Issue ERROR]", error);
+    res.status(500).json({ message: 'Database query failed securely.' });
   }
 };

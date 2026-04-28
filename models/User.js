@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 
-const citizenSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { 
     type: String, 
+    enum: ['citizen', 'politician', 'admin'],
     default: 'citizen' 
-  }
+  },
+  isVerified: { type: Boolean, default: false }
 }, { timestamps: true });
 
-module.exports = mongoose.model('Citizen', citizenSchema);
+module.exports = mongoose.model('User', userSchema);
