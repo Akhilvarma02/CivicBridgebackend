@@ -1,48 +1,66 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-require('dotenv').config(); // ✅ load env FIRST
+require('dotenv').config();
 
 const app = express();
 
-// Production CORS Middleware
+/* =========================
+   ✅ CORS CONFIG (IMPORTANT)
+========================= */
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // Allows frontend binding strictly from .env if defined
+  origin: process.env.FRONTEND_URL || "*", // allow Vercel URL
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 }));
 
+/* =========================
+   ✅ MIDDLEWARE
+========================= */
 app.use(express.json());
 
-// Routes
+/* =========================
+   ✅ ROUTES
+========================= */
 const authRoutes = require('./routes/authRoutes');
 const issueRoutes = require('./routes/issueRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/issues', issueRoutes);
 
-// Root route
+/* =========================
+   ✅ ROOT ROUTE (HEALTH CHECK)
+========================= */
 app.get("/", (req, res) => {
-  res.send("CivicBridge API is running 🚀");
+  res.status(200).send("CivicBridge API is running 🚀");
 });
 
-// MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("MongoDB connected successfully");
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });
+/* =========================
+   ✅ MONGODB CONNECTION
+========================= */
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  console.log("✅ MongoDB connected");
+})
+.catch((err) => {
+  console.error("❌ MongoDB error:", err.message);
+});
 
-// Global error handler (extra safety)
+/* =========================
+   ✅ GLOBAL ERROR HANDLER
+========================= */
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err.message);
+  console.error("Server Error:", err.stack);
   res.status(500).json({ message: "Internal Server Error" });
 });
 
-// Server start
+/* =========================
+   ✅ SERVER START (RENDER FIX)
+========================= */
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server running on port ${PORT}`);
 });
