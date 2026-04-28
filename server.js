@@ -6,10 +6,10 @@ require('dotenv').config();
 const app = express();
 
 /* =========================
-   ✅ CORS CONFIG (IMPORTANT)
+   ✅ CORS CONFIG (PRODUCTION SAFE)
 ========================= */
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*", // allow Vercel URL
+  origin: process.env.FRONTEND_URL || "*",
   credentials: true,
 }));
 
@@ -35,29 +35,26 @@ app.get("/", (req, res) => {
 });
 
 /* =========================
-   ✅ MONGODB CONNECTION
+   ✅ MONGODB CONNECTION (FIXED)
 ========================= */
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("✅ MongoDB connected");
-})
-.catch((err) => {
-  console.error("❌ MongoDB error:", err.message);
-});
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected successfully");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+  });
 
 /* =========================
    ✅ GLOBAL ERROR HANDLER
 ========================= */
 app.use((err, req, res, next) => {
-  console.error("Server Error:", err.stack);
+  console.error("Server Error:", err.message);
   res.status(500).json({ message: "Internal Server Error" });
 });
 
 /* =========================
-   ✅ SERVER START (RENDER FIX)
+   ✅ SERVER START (RENDER SAFE)
 ========================= */
 const PORT = process.env.PORT || 5000;
 
